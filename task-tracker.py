@@ -1,33 +1,40 @@
+import datetime
+
 def load_tasks():
     try:
-        # Tries to open "tasks.txt" file + get tasks
+        # Tries to open "tasks.txt" file, gets tasks/creation times
         with open("tasks.txt", "r") as file:
-            tasks = file.read().splitlines()
+            # Splits lines, stores them as tuples
+            tasks = [tuple(line.split(", ")) for line in file.read().splitlines()]
         return tasks
     except FileNotFoundError:
-        # If no "tasks.txt" found, returns empty list
+        # If the "tasks.txt" file is not found, return an empty list
         return []
 
 def save_tasks(tasks):
-    # Opens "tasks.txt" + saves each task on new line
+    # Opens tasks.txt file, saves each task w/ creation time on new line
     with open("tasks.txt", "w") as file:
-        for task in tasks:
-            file.write(task + "\n")
+        for task, time in tasks:
+            file.write(f"{task}, {time}\n")
 
 def display_tasks(tasks):
     if not tasks:
-        # If no tasks already, prints the following:
-        print("No tasks in your to-do list yet. Try creating one and check back here again!")
+        # If no tasks, prints the following:
+        print("No tasks in the to-do list.")
     else:
-        # If there's tasks already, displays each with index value
-        print("Tasks in your to-do list:")
-        for index, task in enumerate(tasks, start=1):
-            print(f"{index}. {task}")
+        # If tasks exist, displays them + creation time
+        print("Tasks in the to-do list:")
+        for index, (task, time) in enumerate(tasks, start=1):
+            print(f"{index}. Task: {task} | Created at: {time}")
 
 def add_task(tasks, new_task):
-    # Adds new_task to tasks
-    tasks.append(new_task)
-    print(f"Task '{new_task}' added to your to-do list!")
+    # Get current date/time
+    current_time = datetime.datetime.now()
+    # Format date/time
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    # Add new_task + creation time as tuple to tasks
+    tasks.append((new_task, formatted_time))
+    print(f"Task '{new_task}' added to the to-do list at {formatted_time}.")
 
 def remove_task(tasks, task_number):
     if 1 <= task_number <= len(tasks):
@@ -35,7 +42,7 @@ def remove_task(tasks, task_number):
         removed_task = tasks.pop(task_number - 1)
         print(f"Task '{removed_task}' removed from your to-do list.")
     else:
-        # If task_number input is invalid, prints the following:
+        # If task_number is invalid, prints the following:
         print("Invalid task number, please try again.")
 
 def get_valid_choice(prompt, valid_choices):
